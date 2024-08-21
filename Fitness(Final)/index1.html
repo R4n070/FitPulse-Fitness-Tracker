@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="../img/logo_white.png" type="image/icon type" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/homepage.css" />
+    <script src="j.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Fitness Tracker</title>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="navbar-left">
+          <!-- Logo and Text -->
+          <img src="../img/logo_white.png" alt="Logo" class="navbar-logo" />
+          <div class="text-container">
+            <div class="fitpulse">
+              <p>
+                <span class="fit"
+                  >&nbsp;&nbsp;FIT<span class="different-color"
+                    >PULSE&nbsp;&nbsp;<br /></span
+                ></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="navbar-right" id="navbarDropdown">
+          <!-- Dropdown Trigger -->
+          <div class="dropdown-trigger" id="dropdownTrigger">
+            <!-- Username -->
+            <div id="usernameDisplay" class="username"></div>
+            <!-- Profile picture -->
+            <img
+              id="profilePicture"
+              src=""
+              alt="Profile Picture"
+              class="profile-pic"
+            />
+          </div>
+          <!-- Dropdown Content -->
+          <div class="dropdown-content" id="dropdownContent">
+            <a href="profile.html">Profile</a>
+            <a href="history.html">History</a>
+            <a href="login.html" id="logoutBtn">Logout</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <!-- Clock -->
+      <div class="time-container">
+        <div class="clock" id="date"></div>
+        <div class="clock" id="clock"></div>
+      </div>
+
+      <!-- 1st Container -->
+      <div class="form-container">
+        <!-- Updated: Added a select dropdown for exercise type -->
+        <label class="upper">Upper Body:</label>
+        <select id="exercise">
+          <option value="N/A">Select Exercise</option>
+          <option value="Push-ups">Push-ups</option>
+          <option value="Bench Press">Bench Press</option>
+          <option value="Dumbbell Rows">Dumbbell Rows</option>
+          <!-- Add more options as needed -->
+        </select>
+        <input type="number" id="sets1" placeholder="Enter sets" />
+        <input
+          type="number"
+          id="repetitions1"
+          placeholder="Enter repetitions"
+        />
+        <label class="lower">Lower Body:</label>
+        <select id="exercise2">
+          <option value="N/A">Select Exercise</option>
+          <option value="Squats">Squats</option>
+          <option value="Deadlifts">Deadlifts</option>
+          <option value="Lunges">Lunges</option>
+          <!-- Add more options for lower body exercises -->
+        </select>
+
+        <input type="number" id="sets2" placeholder="Enter sets" />
+        <input
+          type="number"
+          id="repetitions2"
+          placeholder="Enter repetitions"
+        />
+        <label class="full">Full Body:</label>
+        <select id="exercise3">
+          <option value="N/A">Select Exercise</option>
+          <option value="Burpees">Burpees</option>
+          <option value="Mountain Climbers">Mountain Climbers</option>
+          <option value="Jumping Jacks">Jumping Jacks</option>
+          <!-- Add more options for full body exercises -->
+        </select>
+        <input type="number" id="sets3" placeholder="Enter sets" />
+        <input
+          type="number"
+          id="repetitions3"
+          placeholder="Enter repetitions"
+        />
+      </div>
+      <div class="title-main">
+        Fitness <span class="different-color">Tracker</span>
+      </div>
+      <!-- 2nd Container -->
+      <div class="weight-container">
+        <label for="weight">Weight (kg):</label>
+        <input
+          type="number"
+          id="weight"
+          placeholder="Enter weight used"
+          required
+        />
+
+        <label for="duration"> Duration (minutes):</label>
+        <input type="number" id="duration" placeholder="Enter duration" />
+
+        <button id="addExerciseBtn">Add Exercise</button>
+      </div>
+
+      <div class="graph-container">
+        <canvas id="progressChart" class="chart"></canvas>
+      </div>
+
+      <div class="bmi-container">
+        <div class="label-con">
+          <label class="bmi-label">BMI Calculator</label>
+        </div>
+        <div class="input-con">
+          <input
+            type="number"
+            id="height-bmi"
+            placeholder="Enter Height (cm)"
+            class="height-bmi"
+          />
+          <input
+            type="number"
+            id="weight-bmi"
+            placeholder="Enter Weight (kg)"
+            class="weight-bmi"
+          />
+        </div>
+        <div class="button-con">
+          <button id="submit-bmi" class="submit-bmi">Calculate BMI</button>
+          <div id="bmi-result" class="bmi-result"></div>
+        </div>
+      </div>
+    </main>
+    <script type="module">
+      // Import Firebase modules
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        query,
+        where,
+        getDocs,
+        orderBy,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      import {
+        getStorage,
+        ref,
+        getDownloadURL,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyATxGV7iO7ZlEyv8eytO6WGTtQdW9K4His",
+        authDomain: "fitness-tracker-cce35.firebaseapp.com",
+        databaseURL:
+          "https://fitness-tracker-cce35-default-rtdb.firebaseio.com",
+        projectId: "fitness-tracker-cce35",
+        storageBucket: "fitness-tracker-cce35.appspot.com",
+        messagingSenderId: "932668932462",
+        appId: "1:932668932462:web:3e728cc190cee34469c17f",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+      const storage = getStorage(app);
+
+      let currentUserUid = null;
+      let progressChart = null;
+
+      // Function to get the current date in 'YYYY-MM-DD' format
+      function getCurrentDate() {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+      }
+
+      async function fetchWeightDataAndUpdateChart(uid) {
+        const weightQuery = query(
+          collection(db, "exercises"),
+          where("uid", "==", uid),
+          orderBy("timestamp", "desc")
+        );
+
+        const weightSnapshot = await getDocs(weightQuery);
+
+        if (weightSnapshot.empty) {
+          console.log("No weight data available.");
+          return;
+        }
+
+        const weightData = {};
+        weightSnapshot.forEach((doc) => {
+          if (doc.exists()) {
+            const data = doc.data();
+            const date = data.timestamp.toDate().toLocaleDateString();
+            if (!weightData[date]) {
+              weightData[date] = data.weight;
+            }
+          } else {
+            console.log("No such document!");
+          }
+        });
+
+        const labels = Object.keys(weightData).reverse();
+        const data = Object.values(weightData).reverse();
+
+        updateChart(labels, data);
+      }
+
+      // Function to update the chart with new data
+      function updateChart(labels, data) {
+        progressChart.data.labels = labels;
+        progressChart.data.datasets[0].data = data;
+        progressChart.update();
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById("progressChart").getContext("2d");
+        progressChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [], // This will hold the labels (e.g., dates)
+            datasets: [
+              {
+                label: "Weight Progress",
+                data: [], // This will hold the weight data
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              x: {
+                ticks: {
+                  color: "white",
+                },
+              },
+              y: {
+                ticks: {
+                  color: "white",
+                },
+                beginAtZero: true,
+                max: 200, // Set the max value for y-axis
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "white", // Set the color of the legend text to white
+                  font: {
+                    family: "Poppins", // Change to your desired font family
+                    size: 20, // Change to your desired font size
+                    style: "italic", // Change to your desired font style (normal, italic, oblique)
+                    weight: "bold", // Change to your desired font weight (normal, bold, bolder, lighter, etc.)
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Load data from Firestore on page load
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            fetchWeightDataAndUpdateChart(user.uid);
+          }
+        });
+      });
+
+      // Check user authentication status
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          currentUserUid = user.uid;
+          try {
+            const userQuery = query(
+              collection(db, "users"),
+              where("user_uid", "==", user.uid)
+            );
+            const userSnapshot = await getDocs(userQuery);
+
+            userSnapshot.forEach((doc) => {
+              const userData = doc.data();
+              const usernameElement =
+                document.getElementById("usernameDisplay");
+              usernameElement.textContent = ` ${userData.username}`;
+
+              // Fetch and display profile picture
+              const profilePictureRef = ref(
+                storage,
+                `profilePictures/${user.uid}`
+              );
+              getDownloadURL(profilePictureRef)
+                .then((url) => {
+                  const profilePictureElement =
+                    document.getElementById("profilePicture");
+                  profilePictureElement.src = url;
+                })
+                .catch((error) => {
+                  console.error("Error getting profile picture:", error);
+                  const profilePictureElement =
+                    document.getElementById("profilePicture");
+                  profilePictureElement.src = "./img/nonprofile.png"; // Use default image
+                });
+            });
+          } catch (error) {
+            console.error("Error getting document:", error);
+          }
+        } else {
+          // User is signed out
+          alert("User is not logged in");
+          // Optionally redirect to login page
+        }
+      });
+
+      async function addExercise() {
+        const exercise1 = document.getElementById("exercise").value;
+        const exercise2 = document.getElementById("exercise2").value;
+        const exercise3 = document.getElementById("exercise3").value;
+        const repetitions1 = document.getElementById("repetitions1").value;
+        const repetitions2 = document.getElementById("repetitions2").value;
+        const repetitions3 = document.getElementById("repetitions3").value;
+        const sets1 = document.getElementById("sets1").value;
+        const sets2 = document.getElementById("sets2").value;
+        const sets3 = document.getElementById("sets3").value;
+        const duration = document.getElementById("duration").value;
+        const weight = document.getElementById("weight").value;
+
+        // Check if an exercise is selected but repetitions or sets are not provided
+        if (
+          (exercise1 !== "N/A" && (repetitions1 === "" || sets1 === "")) ||
+          (exercise2 !== "N/A" && (repetitions2 === "" || sets2 === "")) ||
+          (exercise3 !== "N/A" && (repetitions3 === "" || sets3 === ""))
+        ) {
+          alert(
+            "Please enter repetitions and sets for all selected exercises."
+          );
+          return;
+        }
+
+        // Check if weight is provided
+        if (weight === "") {
+          alert("Please enter the weight used.");
+          return;
+        }
+
+        try {
+          await addDoc(collection(db, "exercises"), {
+            uid: currentUserUid,
+            exercise1: exercise1 !== "N/A" ? exercise1 : null,
+            exercise2: exercise2 !== "N/A" ? exercise2 : null,
+            exercise3: exercise3 !== "N/A" ? exercise3 : null,
+            repetitions1: parseInt(repetitions1, 10),
+            repetitions2: parseInt(repetitions2, 10),
+            repetitions3: parseInt(repetitions3, 10),
+            sets1: parseInt(sets1, 10),
+            sets2: parseInt(sets2, 10),
+            sets3: parseInt(sets3, 10),
+            duration: parseInt(duration, 10),
+            weight: parseFloat(weight),
+            timestamp: new Date(),
+          });
+          alert("Exercise added successfully");
+          // Clear input fields
+          document.getElementById("exercise").value = "N/A";
+          document.getElementById("repetitions1").value = "";
+          document.getElementById("sets1").value = "";
+          document.getElementById("exercise2").value = "N/A";
+          document.getElementById("repetitions2").value = "";
+          document.getElementById("sets2").value = "";
+          document.getElementById("exercise3").value = "N/A";
+          document.getElementById("repetitions3").value = "";
+          document.getElementById("sets3").value = "";
+          document.getElementById("duration").value = "";
+          document.getElementById("weight").value = "";
+
+          // Update the chart with new data
+          fetchWeightDataAndUpdateChart(currentUserUid);
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          alert("Failed to add exercise");
+        }
+      }
+
+      // Attach event listener to button
+      document
+        .getElementById("addExerciseBtn")
+        .addEventListener("click", addExercise);
+
+      // Function to handle exercise selection change
+      function handleExerciseSelectionChange() {
+        const exercise1 = document.getElementById("exercise").value;
+        const exercise2 = document.getElementById("exercise2").value;
+        const exercise3 = document.getElementById("exercise3").value;
+
+        // Enable or disable the repetitions and sets input fields based on exercise selection
+        document.getElementById("repetitions1").disabled = exercise1 === "N/A";
+        document.getElementById("repetitions2").disabled = exercise2 === "N/A";
+        document.getElementById("repetitions3").disabled = exercise3 === "N/A";
+        document.getElementById("sets1").disabled = exercise1 === "N/A";
+        document.getElementById("sets2").disabled = exercise2 === "N/A";
+        document.getElementById("sets3").disabled = exercise3 === "N/A";
+      }
+
+      // Attach event listener to exercise selection dropdowns
+      document
+        .getElementById("exercise")
+        .addEventListener("change", handleExerciseSelectionChange);
+      document
+        .getElementById("exercise2")
+        .addEventListener("change", handleExerciseSelectionChange);
+      document
+        .getElementById("exercise3")
+        .addEventListener("change", handleExerciseSelectionChange);
+
+      // Call handleExerciseSelectionChange initially
+      handleExerciseSelectionChange();
+
+      // Function to limit input fields to accept only three-digit numbers and prevent negative numbers
+      function limitInputToThreeDigitsAndPositive(elementId, maxValue) {
+        document
+          .getElementById(elementId)
+          .addEventListener("input", function () {
+            // Remove non-digit characters and limit to 3 digits
+            this.value = this.value.replace(/\D/g, "").slice(0, 3);
+            // Ensure the value is between 1 and the specified max value
+            const value = parseInt(this.value, 10);
+            if (value < 1) {
+              this.value = "1";
+            } else if (value > maxValue) {
+              this.value = String(maxValue);
+            }
+          });
+      }
+
+      // Attach event listeners to input fields
+      limitInputToThreeDigitsAndPositive("repetitions1", 100);
+      limitInputToThreeDigitsAndPositive("repetitions2", 100);
+      limitInputToThreeDigitsAndPositive("repetitions3", 100);
+      limitInputToThreeDigitsAndPositive("duration", 60);
+      limitInputToThreeDigitsAndPositive("weight", 200);
+      limitInputToThreeDigitsAndPositive("sets1", 20);
+      limitInputToThreeDigitsAndPositive("sets2", 20);
+      limitInputToThreeDigitsAndPositive("sets3", 20);
+    </script>
+
+    <script>
+      function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        const seconds = String(now.getSeconds()).padStart(2, "0");
+        const amOrPm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12 || 12; // Convert to 12-hour format
+
+        const dayAbbreviation = now.toLocaleDateString("en-US", {
+          weekday: "short",
+        });
+        const timeString = `${hours}:${minutes}:${seconds} ${amOrPm}`;
+        document.getElementById(
+          "clock"
+        ).textContent = `${dayAbbreviation} - ${timeString}`;
+
+        // Update the date
+        const fullDate = now.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        document.getElementById("date").textContent = fullDate;
+      }
+
+      // Update the clock every second
+      setInterval(updateClock, 1000);
+
+      // Initial call to display clock immediately
+      updateClock();
+
+      // Height input field
+      const heightInput = document.getElementById("height-bmi");
+      heightInput.addEventListener("input", function () {
+        let value = parseInt(this.value, 10);
+        if (isNaN(value) || value < 1 || value > 250) {
+          this.value = ""; // Clear input if value is invalid
+        }
+      });
+
+      // Weight input field
+      const weightInput = document.getElementById("weight-bmi");
+      weightInput.addEventListener("input", function () {
+        let value = parseInt(this.value, 10);
+        if (isNaN(value) || value < 1 || value > 200) {
+          this.value = ""; // Clear input if value is invalid
+        }
+      });
+
+      document
+        .getElementById("submit-bmi")
+        .addEventListener("click", function () {
+          const height = parseFloat(
+            document.getElementById("height-bmi").value
+          );
+          const weight = parseFloat(
+            document.getElementById("weight-bmi").value
+          );
+          const bmiResultElement = document.getElementById("bmi-result");
+
+          if (!height || !weight) {
+            alert("Please enter valid height and weight.");
+            return;
+          }
+
+          const heightInMeters = height / 100; // Convert height from cm to meters
+          const bmi = weight / (heightInMeters * heightInMeters);
+
+          let classification = "";
+
+          if (bmi < 18.5) {
+            classification = "Underweight";
+          } else if (bmi < 24.9) {
+            classification = "Normal weight";
+          } else if (bmi < 29.9) {
+            classification = "Overweight";
+          } else {
+            classification = "Obese";
+          }
+
+          bmiResultElement.textContent = `Your BMI is ${bmi.toFixed(
+            1
+          )} (${classification})`;
+        });
+    </script>
+  </body>
+</html>

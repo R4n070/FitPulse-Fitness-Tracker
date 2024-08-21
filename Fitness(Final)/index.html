@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register</title>
+    <link rel="icon" href="/img/logo_white.png" type="image/icon type" />
+    <link rel="stylesheet" href="/css/register_css.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+  <body>
+    <div class="box">
+      <div class="form">
+        <div class="logo-container">
+          <div class="logo"></div>
+          <div class="logo-text">R E G I S T E R</div>
+        </div>
+        <form id="registrationForm">
+          <div class="inputbox">
+            <input type="text" value="" id="username" placeholder="Username" />
+          </div>
+          <div class="inputbox">
+            <input type="email" value="" id="email" placeholder="Email" />
+          </div>
+          <div class="inputbox">
+            <input
+              type="password"
+              value=""
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+          <div class="inputbox">
+            <input
+              type="password"
+              value=""
+              id="confirmPassword"
+              placeholder="Confirm Password"
+              required
+            />
+          </div>
+          <div class="show-pass">
+            <button type="button" id="togglePassword">Show Password</button>
+          </div>
+
+          <div class="inputbox">
+            <div class="terms">
+              <input type="checkbox" id="terms" required />
+              <label for="terms"
+                >&nbsp;I agree to the
+                <a href="terms_and_conditions.html" target="_blank" class="tac"
+                  >Terms and Conditions</a
+                ></label
+              >
+            </div>
+          </div>
+          <div class="sub">
+            <input type="submit" value="Sign Up" class="sub" id="submit" />
+          </div>
+        </form>
+        <div class="new-log">
+          <button id="loginRedirect">Already have an account? Login</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      document
+        .getElementById("loginRedirect")
+        .addEventListener("click", function () {
+          window.location.href = "login.html";
+        });
+
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyATxGV7iO7ZlEyv8eytO6WGTtQdW9K4His",
+        authDomain: "fitness-tracker-cce35.firebaseapp.com",
+        databaseURL:
+          "https://fitness-tracker-cce35-default-rtdb.firebaseio.com",
+        projectId: "fitness-tracker-cce35",
+        storageBucket: "fitness-tracker-cce35.appspot.com",
+        messagingSenderId: "932668932462",
+        appId: "1:932668932462:web:3e728cc190cee34469c17f",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      // Function to validate email
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      // Function to validate password
+      function isValidPassword(password) {
+        return password.length >= 6;
+      }
+
+      // Function to toggle password visibility
+      document
+        .getElementById("togglePassword")
+        .addEventListener("click", function () {
+          const passwordField = document.getElementById("password");
+          const confirmPasswordField =
+            document.getElementById("confirmPassword");
+          const passwordType =
+            passwordField.type === "password" ? "text" : "password";
+          passwordField.type = passwordType;
+          confirmPasswordField.type = passwordType;
+          this.textContent =
+            passwordType === "password" ? "Show Password" : "Hide Password";
+        });
+
+      // Function to handle form submission
+      document
+        .getElementById("registrationForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const username = document.getElementById("username").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+          // Client-side validation
+          if (!username || !email || !password || !confirmPassword) {
+            alert("All fields are required");
+            return;
+          }
+          if (!isValidEmail(email)) {
+            alert("Invalid email address");
+            return;
+          }
+          if (!isValidPassword(password)) {
+            alert("Password must be at least 6 characters long");
+            return;
+          }
+          if (password !== confirmPassword) {
+            alert("Passwords do not match");
+            return;
+          }
+
+          try {
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+            const user = userCredential.user;
+
+            // Add user data to Firestore
+            await addDoc(collection(db, "users"), {
+              username: username,
+              email: email,
+              user_uid: user.uid,
+            });
+
+            // Fetch tracker data from Firestore
+            const querySnapshot = await getDocs(collection(db, "tracker"));
+            querySnapshot.forEach((doc) => {
+              console.log(doc.id, " => ", doc.data());
+              // Here you can process each tracker document
+            });
+
+            // Display greeting message with username
+            alert(`Registration Successful! Hello, ${username}!`);
+
+            // Clear input fields
+            document.getElementById("registrationForm").reset();
+          } catch (error) {
+            console.error("Error during registration:", error);
+            alert(error.message);
+          }
+        });
+    </script>
+  </body>
+</html>

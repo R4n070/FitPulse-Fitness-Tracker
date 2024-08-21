@@ -1,0 +1,213 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+}
+body {
+  background-color: #1c1c1c;
+  color: white;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 4fr 6fr;
+  grid-template-areas: "box1 box2";
+}
+.box {
+  display: grid;
+  grid-area: box1;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  height: 100vh;
+  justify-content: center;
+  background-color: #3d3d3d;
+  align-items: center;
+}
+.logo-container {
+  display: flex;
+  justify-content: center;
+}
+.logo {
+  background-image: url(../img/logo_white.png);
+  height: 150px;
+  width: 150px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-bottom: 10px;
+}
+.inputbox {
+  width: 450px;
+  margin: 7px;
+}
+
+.inputbox {
+  position: relative;
+}
+.inputbox i {
+  position: absolute;
+  top: 40%;
+  left: 20px;
+  transform: translateY(-50%);
+  color: #888;
+}
+.inputbox .fa-eye {
+  position: absolute;
+  top: 40%;
+  left: 400px;
+  transform: translateY(-50%);
+  color: #888;
+}
+.inputbox .fa {
+  font-size: 30px;
+}
+
+/* Style the input field */
+.inputbox input[type="email"] {
+  padding-left: 60px; /* Adjust to accommodate icon */
+}
+.inputbox input[type="password"] {
+  padding-left: 60px; /* Adjust to accommodate icon */
+}
+
+.inputbox > input {
+  height: 60px;
+  border-radius: 5px;
+  border-color: #1c1c1c;
+  color: #dddddd;
+  font-size: 18px;
+  padding-left: 50px;
+  background-color: transparent;
+  width: 100%;
+  box-shadow: 5px 5px #323232 inset;
+}
+
+.grid-pass {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "forgot show-pass";
+}
+.show-pass {
+  grid-area: show-pass;
+  justify-content: end;
+}
+.show-pass button {
+  background-color: transparent;
+  border: none;
+  color: rgb(167, 167, 167);
+  padding-left: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 50px;
+  margin-top: 10px;
+  padding-left: 100px;
+}
+.show-pass button:hover {
+  color: white;
+  transition: 300ms;
+}
+.show-pass button:active {
+  color: white;
+  transition: 300ms;
+}
+.forgot-password {
+  justify-content: start;
+}
+.forgot-password a {
+  grid-area: forgot;
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding-left: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 50px;
+  margin-top: 10px;
+  text-decoration: underline;
+}
+.forgot-password a:hover {
+  color: #c097f6;
+  transition: 300ms;
+}
+input {
+  background-color: transparent;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+}
+.signlog {
+  display: flex;
+  justify-content: center;
+}
+.signlog > input {
+  width: 70%;
+  height: 60px;
+  background-color: white;
+  color: #1c1c1c;
+  border: none;
+  border-radius: 15px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.signlog > input:hover {
+  background-color: #c1c1c1;
+  transition: 300ms;
+}
+.signup {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 70px;
+  margin-bottom: -20px;
+}
+.signup button {
+  background-color: transparent;
+  color: white;
+  text-decoration: underline;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+.signup button:hover {
+  color: #c097f6;
+  transition: 300ms;
+}
+
+.box2 {
+  display: grid;
+  grid-area: box2;
+  margin: 8px;
+  background-image: url(../img/login_bg.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  border: #3d3d3d solid 10px;
+  border-radius: 10px;
+  justify-content: center;
+  text-align: center;
+  align-content: center;
+}
+.fitpulse {
+  font-family: "League Spartan", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 60px;
+  margin: 0;
+}
+.fit {
+  letter-spacing: 0.1em;
+  border-bottom: solid white 4px;
+}
+.different-color {
+  color: #7027d4;
+}
+.catalog {
+  font-weight: 500;
+  font-size: 18px;
+  color: #c097f6;
+  margin: 0;
+  padding: 0;
+}
+.catalog-con {
+  margin-top: 20px;
+}
